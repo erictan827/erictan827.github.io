@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>項目 分享</title>
+</head>
+<body>
+    <script v=20220826>
+        // 获取项目ID
+        let id = location.href.split('/');
+        id = id[id.length - 1];
+        
+        // 查看是否已经登陆
+        let user = localStorage.getItem('designer_user');
+        if(user){
+            user = JSON.parse(user);
+            user.projects += ',' + id;
+            localStorage.setItem('designer_user', JSON.stringify(user));
+            let xhr = new XMLHttpRequest();
+            //xhr.open('GET', `http://simplerevise.com/api/group/bind/?uid=${user.id}&pid=${id}`, true);
+			xhr.open('GET', `https://www.simplerevise.com/api/group/bind/?uid=${user.id}&pid=${id}`, true);
+            xhr.send();
+            xhr.onreadystatechange = () => {
+                if (xhr.status == 200 && xhr.readyState == 4){
+					//location.href = `http://simplerevise.com/#/list?id=${id}&share=1`;
+					location.href = `https://www.simplerevise.com/#/list?id=${id}&share=1`;
+                }
+            }
+        }else{
+            user = {
+                avatar: "/img/avatar.png",
+                create_time: "",
+                id: "0",
+                last_time: "",
+                mail: "",
+                phone: "",
+                projects: ",",
+                role: "2",
+                status: "0",
+                user_name: "Custom"
+            }
+            localStorage.setItem('designer_user', JSON.stringify(user));
+            //location.href = `http://simplerevise.com/#/list?id=${id}&share=1`;
+			location.href = `https://www.simplerevise.com/#/list?id=${id}&share=1`;
+        }
+    </script>
+</body>
+</html>
