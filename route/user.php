@@ -45,7 +45,9 @@
             if(count($result) > 0){
                 Common::response(201, '', '用户已存在');
             }else{
-                $this -> db -> query("insert into user_list (user_name, passwd, create_time, role, projects, subscription , current_project, max_projects, expired_time) values ('$userName', '$passwd', '$time', '1', '' , '0' , '0' , '1', '$expired_time')");
+                // $sql = "insert into user_list (user_name, passwd, create_time, role, projects, subscription , current_project, max_projects, expired_time) values ('$userName', '$passwd', '$time', '1', '' , '0' , '0' , '1', '$expired_time')";
+                // echo $sql;
+                $this -> db -> query("insert into user_list (user_name, passwd, create_time, role, projects, subscription , max_projects, expired_time) values ('$userName', '$passwd', '$time', '1', '' , '0' , '1', '$expired_time')");
                 Common::response(200);
             }
         }

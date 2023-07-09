@@ -52,6 +52,12 @@ public function save() {
   // You can send a response back to the client if needed
 }
 
+        public function add_tag (){
+            $name = $_POST['name'];
+            $this -> db -> query("INSERT INTO tag_list (name) VALUES ('$name');");
+            Common::response();
+        }
+
 
         /**
          * 获取分组列表
@@ -83,6 +89,78 @@ public function save() {
             $id = $_POST['id'];
             $name = $_POST['name'];
             $this -> db -> query("update project_group set group_name = '$name' where id = '$id'");
+            Common::response();
+        }
+        
+        public function save_img_tag (){
+            $name = $_POST['name'];
+            $img_url = $_POST['img_url'];
+            $id = $_POST['id'];
+            $this -> db -> query("update board_list set tag_name = '$name' where img_url = '$img_url' and group_id = '$id'");
+            Common::response();
+        }
+        
+        public function save_own_img_tag (){
+            $name = $_POST['name'];
+            $img_url = $_POST['img_url'];
+            $creater_id = $_POST['creater_id'];
+            $this -> db -> query("update gallery_list set tag_name = '$name' where img_url = '$img_url' and creater_id = '$creater_id'");
+            Common::response();
+        }
+        
+        public function save_public_img_tag (){
+            $name = $_POST['name'];
+            $img_url = $_POST['img_url'];
+            $this -> db -> query("update public_gallery set tag_name = '$name' where img_url = '$img_url'");
+            Common::response();
+        }
+        
+        public function save_public_img(){
+            $img_url = $_POST['img_url'];
+            $id = $_POST['id'];
+            $title = $_POST['title'];
+            $create_time = $_POST['create_time'];
+            $status = $_POST['status'];
+            $pages = $_POST['pages'];
+            $tag_name = $_POST['tag_name'];
+            $this -> db -> query("INSERT INTO public_gallery (img_url, creater_id, title, create_time, status, pages, tag_name, public) VALUES ('$img_url', '$id', '$title', '$create_time', '$status','$pages','$tag_name','1');");
+            Common::response();
+        }
+        
+         public function save_public_img_to_own(){
+            $img_url = $_POST['img_url'];
+            $id = $_POST['id'];
+            $title = $_POST['title'];
+            $create_time = $_POST['create_time'];
+            $status = $_POST['status'];
+            $pages = $_POST['pages'];
+            $tag_name = $_POST['tag_name'];
+            $group_id = $_POST['group_id'];
+            
+            if ($group_id == 'undefined') {
+            $this->db->query("
+                INSERT INTO gallery_list (img_url, creater_id, title, create_time, status, pages, tag_name) VALUES ('$img_url', '$id', '$title', '$create_time', '$status','$pages','$tag_name')");
+            } else {
+                $this->db->query("
+                    INSERT INTO board_list (group_id, img_url, creater_id, title, create_time, status, pages, tag_name) VALUES ('$group_id' , '$img_url', '$id', '$title', '$create_time', '$status','$pages','$tag_name')");
+            }
+            
+            
+            Common::response();
+        }
+        
+        public function list_tags()
+    {
+        $id = $_GET['id'];
+        $result = $this->db->query("SELECT * FROM tag_list");
+        $result = Common::fetch($result);
+        Common::response(200, $result);
+    }
+        
+        public function rename_tag(){
+            $id = $_POST['id'];
+            $name = $_POST['name'];
+            $this -> db -> query("update tag_list set name = '$name' where id = '$id'");
             Common::response();
         }
         
@@ -132,12 +210,50 @@ public function del_board()
     Common::response();
 }
 
-public function del_board_img()
+// public function del_gallery_img()
+// {
+//     $img_url = $_GET['img_url'];
+//     $group_id = $_GET['id'];
+
+//     // Delete the record from the project_group table
+//     // $this->db->query("DELETE FROM gallery_list WHERE img_url = '$img_url'");
+//     $this->db->query("DELETE FROM board_list WHERE img_url = '$img_url and group_id = '$group_id'");
+
+//     // Send the response
+//     Common::response();
+// }
+
+public function del_gallery_img()
+{
+    $img_url = $_GET['img_url'];
+    $group_id = $_GET['id'];
+
+    // Delete the record from the project_group table
+    $this->db->query("DELETE FROM board_list WHERE img_url = '$img_url' AND group_id = '$group_id'");
+
+    // Send the response
+    Common::response();
+}
+
+public function del_own_gallery_img()
+{
+    $img_url = $_GET['img_url'];
+    $creater_id = $_GET['id'];
+
+    // Delete the record from the project_group table
+    $this->db->query("DELETE FROM gallery_list WHERE img_url = '$img_url' AND creater_id = '$creater_id'");
+
+    // Send the response
+    Common::response();
+}
+
+
+public function del_public_gallery_img()
 {
     $img_url = $_GET['img_url'];
 
     // Delete the record from the project_group table
-    $this->db->query("DELETE FROM board_list WHERE img_url = '$img_url'");
+    $this->db->query("DELETE FROM public_gallery WHERE img_url = '$img_url'");
 
     // Send the response
     Common::response();
@@ -149,6 +265,17 @@ public function del_preference_name()
 
     // Delete the record from the project_group table
     $this->db->query("DELETE FROM preference_group WHERE preference_name = '$preference_name'");
+
+    // Send the response
+    Common::response();
+}
+
+public function del_tag_name()
+{
+    $tag_name = $_GET['name'];
+
+    // Delete the record from the project_group table
+    $this->db->query("DELETE FROM tag_list WHERE name = '$tag_name'");
 
     // Send the response
     Common::response();
